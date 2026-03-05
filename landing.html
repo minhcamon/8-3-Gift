@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mẹ Yêu - Kỷ Niệm 8/3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Mulish:wght@400;600;800&display=swap');
+        
+        body { 
+            font-family: 'Mulish', sans-serif; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
+        }
+        
+        .font-elegant { font-family: 'Playfair Display', serif; }
+
+        #book-container {
+            perspective: 2000px; /* Tăng chiều sâu để lật mượt hơn */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #book {
+            width: 85%; 
+            max-width: 900px;
+            height: 75%;
+            max-height: 650px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1); 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.02), 0 4px 15px rgba(0, 0, 0, 0.1); 
+            /* Khử nháy viền trong Chrome/Safari */
+            -webkit-transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .front, .back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #fffaf0;
+            /* Khử nháy bề mặt */
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            border-radius: 0 1rem 1rem 0; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border: 1px solid #fce7f3; 
+        }
+
+        /* Hack phần back để không bị nháy hình khi lật */
+        .front { transform: rotateY(0deg) translateZ(1px); }
+        .back { transform: rotateY(180deg) translateZ(1px); border-radius: 1rem 0 0 1rem; }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Khung ảnh */
+        .media-frame {
+            width: 100%;
+            height: 75%;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            border: 6px solid white;
+            position: relative;
+        }
+
+        /* Hoa rơi & Nổ tim */
+        .petal { position: fixed; top: -10vh; z-index: 0; opacity: 0.6; animation: fall linear forwards; pointer-events: none; }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg) scale(1); opacity: 0; } 10% { opacity: 0.8; } 100% { transform: translateY(110vh) rotate(360deg) scale(1.2); opacity: 0; } }
+        
+        .burst-heart { position: absolute; font-size: 2rem; animation: burst 1s ease-out forwards; pointer-events: none; z-index: 60; }
+        @keyframes burst { 0% { transform: translate(0, 0) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <div id="petal-container"></div> 
+
+    <header class="absolute top-0 left-0 w-full p-6 text-center z-10 pointer-events-none">
+        <h1 class="text-3xl md:text-4xl text-rose-800 font-elegant italic drop-shadow-sm">Kỷ Niệm 8/3 - Mẹ Yêu</h1>
+    </header>
+
+    <div id="book-container">
+        <div id="book">
+            <div class="page z-50" id="page1">
+                <div class="front bg-gradient-to-br from-rose-100 to-rose-200">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3067/3067822.png" alt="Icon" class="w-24 h-24 mb-6">
+                    <h2 class="text-4xl font-elegant text-rose-900 mb-2">An Nhiên</h2>
+                    <p class="text-rose-700 font-bold text-lg">Gửi Mẹ Của Con</p>
+                </div>
+                <div class="back">
+                    <h3 class="text-2xl font-elegant text-rose-800 mb-4">Mở Đầu</h3>
+                    <p class="text-gray-700 text-lg leading-relaxed text-center px-4">Cuốn album này chứa đựng những mảnh ghép thời gian. Nơi lưu giữ nụ cười và những khoảnh khắc đẹp nhất của Mẹ...</p>
+                </div>
+            </div>
+
+            <div class="page z-40" id="page2">
+                <div class="front">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80" alt="Ảnh 1" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Nụ cười rạng rỡ của Mẹ..."</p>
+                </div>
+                <div class="back">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1494607239400-ff147da4e188?auto=format&fit=crop&w=600&q=80" alt="Ảnh 2" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Những ngày tháng bình yên"</p>
+                </div>
+            </div>
+
+            <div class="page z-30" id="page3">
+                <div class="front">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=600&q=80" alt="Ảnh 3" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Mẹ luôn là hậu phương vững chắc"</p>
+                </div>
+                <div class="back">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?auto=format&fit=crop&w=600&q=80" alt="Ảnh 4" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Từng chặng đường Mẹ dìu dắt"</p>
+                </div>
+            </div>
+
+            <div class="page z-20" id="page4">
+                <div class="front">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1609220136736-443140cffec6?auto=format&fit=crop&w=600&q=80" alt="Ảnh 5" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Tình yêu không lời..."</p>
+                </div>
+                <div class="back">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1581572911140-5e3e3b7b4a78?auto=format&fit=crop&w=600&q=80" alt="Ảnh 6" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Con yêu Mẹ rất nhiều"</p>
+                </div>
+            </div>
+
+            <div class="page z-10" id="page5">
+                <div class="front">
+                    <div class="media-frame">
+                        <img src="https://images.unsplash.com/photo-1506804886640-377ba8ab2550?auto=format&fit=crop&w=600&q=80" alt="Gia đình" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-gray-600 text-center italic font-medium">"Gia đình là tất cả"</p>
+                </div>
+                <div class="back bg-gradient-to-tl from-rose-100 to-rose-200 relative overflow-hidden">
+                    <h2 class="text-3xl font-elegant text-rose-900 mb-2 italic text-center z-10 mt-6">Và cuối cùng...</h2>
+                    <p class="text-rose-700 text-center mb-10 z-10 text-lg">Con có một điều muốn nói với Mẹ!</p>
+                    
+                    <button id="surpriseBtn" class="px-8 py-4 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold text-xl shadow-xl hover:shadow-rose-400/50 hover:scale-105 transition-all z-10 animate-pulse flex items-center gap-2 border-2 border-white">
+                        <span>🎬</span> Mở Quà Bí Mật
+                    </button>
+                    <div class="absolute -bottom-10 -right-10 text-9xl opacity-10">🌸</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-6 left-0 w-full p-6 flex justify-center gap-6 z-10">
+        <button id="prevBtn" class="px-6 py-3 md:px-8 bg-white text-rose-600 rounded-full font-bold shadow-md hover:bg-rose-50 transition-all opacity-50 pointer-events-none">
+            &larr; Lật Lại
+        </button>
+        <button id="nextBtn" class="px-6 py-3 md:px-8 bg-rose-500 text-white rounded-full font-bold shadow-md hover:bg-rose-600 transition-all">
+            Lật Tiếp &rarr;
+        </button>
+    </div>
+
+    <div id="surpriseModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-gray-900/80 backdrop-blur-sm">
+        <div id="modalContent" class="bg-white p-4 md:p-8 rounded-3xl max-w-2xl w-[95%] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative">
+            
+            <button id="closeModalBtn" class="absolute -top-4 -right-4 w-10 h-10 bg-white text-rose-500 rounded-full font-bold text-xl shadow-lg hover:bg-rose-50 hover:scale-110 transition-transform z-50 border-2 border-rose-100">
+                &times;
+            </button>
+
+            <h2 class="text-3xl font-elegant text-rose-600 mb-6 mt-2">Dành Tặng Mẹ ❤️</h2>
+            
+            <div class="w-full aspect-video bg-gray-200 rounded-xl overflow-hidden shadow-inner border-4 border-rose-50 relative mb-4">
+                <iframe 
+                    id="yt-video"
+                    class="w-full h-full absolute top-0 left-0" 
+                    src="" 
+                    title="Video gửi Mẹ" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
+            <p class="text-gray-600 italic text-lg mb-2">"Mong Mẹ luôn vui vẻ, mạnh khỏe và hạnh phúc!"</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. LOGIC LẬT SÁCH (ĐÃ SỬA LỖI NHÁY) ---
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pages = document.querySelectorAll('.page');
+        let currentPage = 0;
+
+        const updateBook = () => {
+            pages.forEach((page, index) => {
+                if (index < currentPage) {
+                    // Đang ở bên trái (đã lật)
+                    page.classList.add('flipped');
+                    // CỐT LÕI FIX LỖI NHÁY: Delay 400ms để trang lật qua hẳn rồi mới hạ z-index xuống
+                    setTimeout(() => {
+                        page.style.zIndex = index; 
+                    }, 400);
+                } else {
+                    // Đang ở bên phải (chưa lật)
+                    page.classList.remove('flipped');
+                    // Khi lật ngược lại, đổi z-index ngay lập tức để trang đè lên trên
+                    page.style.zIndex = pages.length - index; 
+                }
+            });
+
+            prevBtn.classList.toggle('opacity-50', currentPage === 0);
+            prevBtn.classList.toggle('pointer-events-none', currentPage === 0);
+            nextBtn.classList.toggle('opacity-50', currentPage === pages.length);
+            nextBtn.classList.toggle('pointer-events-none', currentPage === pages.length);
+        };
+
+        nextBtn.addEventListener('click', () => { if (currentPage < pages.length) { currentPage++; updateBook(); }});
+        prevBtn.addEventListener('click', () => { if (currentPage > 0) { currentPage--; updateBook(); }});
+
+        // --- 2. LOGIC VIDEO YOUTUBE BẤT NGỜ ---
+        const surpriseBtn = document.getElementById('surpriseBtn');
+        const surpriseModal = document.getElementById('surpriseModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const ytVideo = document.getElementById('yt-video');
+
+        // 👉 THAY ID VIDEO YOUTUBE CỦA BẠN VÀO ĐÂY:
+        const MY_YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ"; 
+
+        surpriseBtn.addEventListener('click', () => {
+            // Hiển thị Modal
+            surpriseModal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+            
+            // Gắn link và ép tự động chạy (autoplay=1)
+            ytVideo.src = `https://www.youtube.com/embed/${MY_YOUTUBE_VIDEO_ID}?autoplay=1`;
+            
+            // Bắn pháo tim
+            createHeartBurst(window.innerWidth / 2, window.innerHeight / 2);
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            // Ẩn Modal
+            surpriseModal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+            
+            // Tắt video ngay lập tức bằng cách xóa link
+            setTimeout(() => {
+                ytVideo.src = ''; 
+            }, 300);
+        });
+
+        // Hàm bắn tim
+        function createHeartBurst(x, y) {
+            const hearts = ['❤️', '💖', '✨', '🎁'];
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('burst-heart');
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = x + 'px';
+                heart.style.top = y + 'px';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 150 + 50;
+                heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1000);
+            }
+        }
+
+        // --- 3. HOA RƠI NỀN ---
+        function startPetalRain() {
+            const petals = ['🌸', '💮', '💖'];
+            const container = document.getElementById('petal-container');
+            setInterval(() => {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.fontSize = (Math.random() * 1.2 + 1) + 'rem';
+                petal.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(petal);
+                setTimeout(() => petal.remove(), 20000);
+            }, 1000); 
+        }
+
+        // Khởi chạy
+        updateBook();
+        startPetalRain();
+    </script>
+</body>
+</html>
