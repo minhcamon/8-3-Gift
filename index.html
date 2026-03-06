@@ -315,49 +315,51 @@
                 const pageToFlip = pages[currentPage - 1];
                 pageToFlip.style.zIndex = 100;
                 pageToFlip.classList.add('flipped');
+                pageToFlip.style.pointerEvents = 'none'; // Vô hiệu hóa chạm vào trang đã lật
 
-                // 👈 THÊM DÒNG NÀY: Vô hiệu hóa chạm vào trang đã lật
-                pageToFlip.style.pointerEvents = 'none';
-
+                // 1. Chỉ hạ tầng z-index khi giấy đã lật qua nửa vòng (400ms) để không bị đè
                 setTimeout(() => {
                     pageToFlip.style.zIndex = currentPage - 1;
-                    isFlipping = false;
                 }, 400);
+                
+                // 2. Mở khóa click khi lật xong hoàn toàn (800ms)
+                setTimeout(() => {
+                    isFlipping = false;
+                }, 800);
             }
             else if (direction === 'backward') {
                 const pageToRestore = pages[currentPage];
-                // 👉 CỐT LÕI: Nhấc trang lên cao nhất NGAY LẬP TỨC
-                pageToRestore.style.zIndex = 200;
+                pageToRestore.style.zIndex = 200; // Nhấc lên cao nhất
                 pageToRestore.classList.add('unflipping');
-
-                // 👈 THÊM DÒNG NÀY: Phục hồi khả năng chạm khi lật ngược lại
-                pageToRestore.style.pointerEvents = 'auto';
+                pageToRestore.style.pointerEvents = 'auto'; // Phục hồi khả năng chạm
 
                 // Kích hoạt rơi xuống
                 requestAnimationFrame(() => {
                     pageToRestore.classList.remove('flipped');
                 });
 
+                // 👉 FIX LỖI NHÁY: Tăng thời gian chờ lên đúng 800ms (Bằng với CSS transition)
+                // Đợi giấy tiếp đất hoàn toàn rồi mới hạ z-index và mở khóa
                 setTimeout(() => {
                     pageToRestore.style.zIndex = pages.length - currentPage;
                     pageToRestore.classList.remove('unflipping');
                     isFlipping = false;
-                }, 400);
+                }, 800);
             }
 
             // Hiện/Ẩn nút Undo
             undoBtn.classList.toggle('opacity-0', currentPage === 0);
             undoBtn.classList.toggle('pointer-events-none', currentPage === 0);
 
-            // Hiện/Ẩn nút Mở Quà mượt mà (Đã xóa pulse)
+            // Hiện/Ẩn nút Mở Quà
             const surpriseBtn = document.getElementById('surpriseBtn');
             if (currentPage === pages.length - 1) {
-                // Delay một chút để trang lật ra xong nút mới từ từ hiện lên
+                // Đợi trang giấy rơi xuống gần xong (500ms) nút mới từ từ mờ hiện ra
                 setTimeout(() => {
                     surpriseBtn.classList.remove('opacity-0', 'pointer-events-none');
-                }, 300);
+                }, 500);
             } else {
-                // Giấu đi ngay lập tức khi lật qua trang khác
+                // Giấu đi ngay lập tức khi rời khỏi trang cuối
                 surpriseBtn.classList.add('opacity-0', 'pointer-events-none');
             }
         };
