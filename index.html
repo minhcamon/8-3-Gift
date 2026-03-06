@@ -198,6 +198,8 @@
                 const pageToFlip = pages[currentPage - 1];
                 pageToFlip.style.zIndex = 100;
                 pageToFlip.classList.add('flipped');
+
+                // 👈 THÊM DÒNG NÀY: Vô hiệu hóa chạm vào trang đã lật
                 pageToFlip.style.pointerEvents = 'none';
 
                 setTimeout(() => {
@@ -207,10 +209,14 @@
             }
             else if (direction === 'backward') {
                 const pageToRestore = pages[currentPage];
+                // 👉 CỐT LÕI: Nhấc trang lên cao nhất NGAY LẬP TỨC
                 pageToRestore.style.zIndex = 200;
                 pageToRestore.classList.add('unflipping');
+
+                // 👈 THÊM DÒNG NÀY: Phục hồi khả năng chạm khi lật ngược lại
                 pageToRestore.style.pointerEvents = 'auto';
 
+                // Kích hoạt rơi xuống
                 requestAnimationFrame(() => {
                     pageToRestore.classList.remove('flipped');
                 });
@@ -222,16 +228,20 @@
                 }, 400);
             }
 
+            // Hiện/Ẩn nút Undo
             undoBtn.classList.toggle('opacity-0', currentPage === 0);
             undoBtn.classList.toggle('pointer-events-none', currentPage === 0);
 
             const surpriseBtn = document.getElementById('surpriseBtn');
             if (currentPage === pages.length - 1) {
+                // Đang ở trang cuối -> Hiện nút ra
                 surpriseBtn.classList.remove('opacity-0', 'pointer-events-none');
+                // Đợi nó hiện ra mượt mà xong thì mới thêm hiệu ứng nhịp tim (pulse)
                 setTimeout(() => {
                     surpriseBtn.classList.add('animate-pulse');
                 }, 700);
             } else {
+                // Không phải trang cuối -> Giấu đi
                 surpriseBtn.classList.add('opacity-0', 'pointer-events-none');
                 surpriseBtn.classList.remove('animate-pulse');
             }
