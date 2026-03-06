@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,45 +8,63 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Quicksand:wght@500;700&display=swap');
-        
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            overflow: hidden; 
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
             background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
         }
-        
-        .font-elegant { font-family: 'Playfair Display', serif; }
+
+        .font-elegant {
+            font-family: 'Playfair Display', serif;
+        }
 
         #notebook-wrapper {
-            width: 100%; height: 100vh;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            padding: 10px; box-sizing: border-box;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
-        .hint-text { margin-bottom: 25px; animation: pulseFade 2.5s infinite; z-index: 150; }
+        .hint-text {
+            margin-bottom: 25px;
+            animation: pulseFade 2.5s infinite;
+            z-index: 150;
+        }
 
         #notebook {
-            width: 85vw; max-width: 400px;
-            aspect-ratio: 1 / 1.35; max-height: 65vh;
-            position: relative; transform-style: preserve-3d; perspective: 2000px;
+            width: 85vw;
+            max-width: 400px;
+            aspect-ratio: 1 / 1.35;
+            max-height: 65vh;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 2000px;
         }
 
         /* TRANG GIẤY */
         .page {
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background-color: #fffcf8;
             background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(254, 205, 211, 0.4) 31px, rgba(254, 205, 211, 0.4) 32px);
             background-position: 0 40px;
             border-radius: 12px 12px 24px 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Bóng đổ mặc định nhẹ nhàng */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            /* Bóng đổ mặc định nhẹ nhàng */
             border: 1px solid #fce7f3;
             transform-origin: top center;
             /* Transition mượt mà hơn cho cả 2 chiều */
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s, box-shadow 0.8s;
             cursor: pointer;
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
             padding: 2.8rem 1.2rem 1.2rem 1.2rem;
             -webkit-transform-style: preserve-3d;
             will-change: transform, z-index;
@@ -56,63 +75,144 @@
             transform: rotateX(120deg) translateY(-40px) skewX(2deg);
             opacity: 0;
             pointer-events: none;
-            box-shadow: 0 0 0 rgba(0,0,0,0); /* Mất bóng khi bay mất */
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            /* Mất bóng khi bay mất */
         }
 
         /* HIỆU ỨNG KHI ĐANG LẬT NGƯỢC LẠI (Dynamic via JS) */
         .page.unflipping {
             /* Thêm hiệu ứng bóng đổ mạnh khi trang đang "rơi" xuống */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         /* LỚP PHỦ BÓNG CONG GIẤY */
         .page::after {
-            content: ''; position: absolute; inset: 0; border-radius: inherit;
-            background: linear-gradient(to top, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 40%);
-            opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 5;
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0) 40%);
+            opacity: 0;
+            transition: opacity 0.6s;
+            pointer-events: none;
+            z-index: 5;
         }
-        .page.flipped::after { opacity: 1; }
+
+        .page.flipped::after {
+            opacity: 1;
+        }
 
         /* CÒNG SẮT (GIỮ NGUYÊN) */
         .binder-rings {
-            position: absolute; top: -15px; left: 0; width: 100%;
-            display: flex; justify-content: space-evenly;
-            padding: 0 12%; z-index: 250; pointer-events: none;
-        }
-        .ring {
-            width: 14px; height: 42px;
-            background: linear-gradient(90deg, #d1d5db 0%, #ffffff 40%, #9ca3af 100%);
-            border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            padding: 0 12%;
+            z-index: 250;
+            pointer-events: none;
         }
 
-        #undoBtn { margin-top: 20px; transition: all 0.3s; z-index: 100; }
+        .ring {
+            width: 14px;
+            height: 42px;
+            background: linear-gradient(90deg, #d1d5db 0%, #ffffff 40%, #9ca3af 100%);
+            border-radius: 10px;
+            box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+
+        #undoBtn {
+            margin-top: 20px;
+            transition: all 0.3s;
+            z-index: 100;
+        }
 
         .polaroid {
-            flex-grow: 1; background-color: white;
-            padding: 10px 10px 35px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            margin-bottom: 1rem; max-height: 72%; overflow: hidden; border: 1px solid #f3f4f6;
+            flex-grow: 1;
+            background-color: white;
+            padding: 10px 10px 35px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1rem;
+            max-height: 72%;
+            overflow: hidden;
+            border: 1px solid #f3f4f6;
         }
-        .polaroid img { width: 100%; height: 100%; object-fit: cover; }
 
-        @keyframes pulseFade { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        .petal { position: fixed; top: -10vh; z-index: 0; opacity: 0.6; animation: fall linear forwards; pointer-events: none; }
-        @keyframes fall { 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-        .burst-heart { position: absolute; font-size: 2rem; animation: burst 1s ease-out forwards; z-index: 400; pointer-events: none; }
-        @keyframes burst { 0% { transform: translate(0, 0) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulseFade {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .petal {
+            position: fixed;
+            top: -10vh;
+            z-index: 0;
+            opacity: 0.6;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .burst-heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: burst 1s ease-out forwards;
+            z-index: 400;
+            pointer-events: none;
+        }
+
+        @keyframes burst {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <div id="petal-container"></div> 
+    <div id="petal-container"></div>
 
     <div id="notebook-wrapper">
-        <div id="hint" class="hint-text text-rose-500 font-bold bg-white/90 px-5 py-2 rounded-full shadow-sm text-xs md:text-sm border border-rose-100 flex items-center gap-2">
+        <div id="hint"
+            class="hint-text text-rose-500 font-bold bg-white/90 px-5 py-2 rounded-full shadow-sm text-xs md:text-sm border border-rose-100 flex items-center gap-2">
             <span class="animate-bounce">👆</span> Chạm vào giấy để lật sang trang
         </div>
 
         <div id="notebook">
             <div class="binder-rings">
-                <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
             </div>
 
             <div class="page" id="page1">
@@ -120,34 +220,62 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/3067/3067822.png" class="w-16 h-16 mb-4">
                     <h2 class="text-3xl font-elegant text-rose-900 mb-1">An Nhiên</h2>
                     <p class="text-rose-600 font-bold text-sm tracking-widest uppercase">Nhật Ký 8/3</p>
-                    <p class="text-gray-500 italic text-center text-xs mt-8 px-4 leading-relaxed">"Nơi lưu giữ những nụ cười đẹp nhất của Mẹ..."</p>
+                    <p class="text-gray-500 italic text-center text-xs mt-8 px-4 leading-relaxed">"Nơi lưu giữ những nụ
+                        cười đẹp nhất của Mẹ..."</p>
                 </div>
             </div>
 
-            <div class="page" id="page2"><div class="polaroid"><img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80"></div><p class="text-gray-700 font-elegant italic text-lg text-center">"Nụ cười của Mẹ..."</p></div>
-            <div class="page" id="page3"><div class="polaroid"><img src="https://images.unsplash.com/photo-1494607239400-ff147da4e188?auto=format&fit=crop&w=600&q=80"></div><p class="text-gray-700 font-elegant italic text-lg text-center">"Ngày tháng bình yên"</p></div>
-            <div class="page" id="page4"><div class="polaroid"><img src="https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?auto=format&fit=crop&w=600&q=80"></div><p class="text-gray-700 font-elegant italic text-lg text-center">"Yêu Mẹ rất nhiều"</p></div>
+            <div class="page" id="page2">
+                <div class="polaroid"><img
+                        src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80">
+                </div>
+                <p class="text-gray-700 font-elegant italic text-lg text-center">"Nụ cười của Mẹ..."</p>
+            </div>
+            <div class="page" id="page3">
+                <div class="polaroid"><img
+                        src="https://images.unsplash.com/photo-1494607239400-ff147da4e188?auto=format&fit=crop&w=600&q=80">
+                </div>
+                <p class="text-gray-700 font-elegant italic text-lg text-center">"Ngày tháng bình yên"</p>
+            </div>
+            <div class="page" id="page4">
+                <div class="polaroid"><img
+                        src="https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?auto=format&fit=crop&w=600&q=80">
+                </div>
+                <p class="text-gray-700 font-elegant italic text-lg text-center">"Yêu Mẹ rất nhiều"</p>
+            </div>
 
             <div class="page" id="page5">
                 <div class="flex-1 flex flex-col items-center justify-center">
                     <h2 class="text-2xl font-elegant text-rose-800 mb-4 italic">Cuối cùng...</h2>
-                    <p class="text-gray-600 text-center mb-8 text-sm px-6 leading-relaxed">Con có một món quà bí mật muốn gửi đến Mẹ!</p>
-                    <button id="surpriseBtn" class="px-8 py-3 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold text-base shadow-lg animate-pulse border-2 border-white">🎬 Mở Quà Bí Mật</button>
+                    <p class="text-gray-600 text-center mb-8 text-sm px-6 leading-relaxed">Con có một món quà bí mật
+                        muốn gửi đến Mẹ!</p>
+                    <button id="surpriseBtn"
+                        class="opacity-0 pointer-events-none transition-opacity duration-70 px-8 py-3 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold text-base shadow-lg border-2 border-white">🎬
+                        Mở Quà Bí Mật</button>
                 </div>
             </div>
         </div>
 
-        <button id="undoBtn" class="opacity-0 pointer-events-none px-6 py-2.5 bg-white/90 text-rose-500 rounded-full font-bold shadow-md text-xs border border-rose-100 flex items-center gap-2">
+        <button id="undoBtn"
+            class="opacity-0 pointer-events-none px-6 py-2.5 bg-white/90 text-rose-500 rounded-full font-bold shadow-md text-xs border border-rose-100 flex items-center gap-2">
             ↺ Xem lại trang trước
         </button>
     </div>
 
-    <div id="surpriseModal" class="fixed inset-0 z-[300] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-gray-900/85 backdrop-blur-sm">
-        <div id="modalContent" class="bg-white p-5 md:p-8 rounded-3xl max-w-xl w-full text-center shadow-2xl transform scale-90 transition-transform duration-500 relative overflow-visible">
-            <button id="closeModalBtn" class="absolute -top-3 -right-3 md:-top-5 md:-right-5 w-10 h-10 bg-rose-500 text-white rounded-full font-bold text-xl shadow-lg border-2 border-white z-[310] flex items-center justify-center">&times;</button>
-            <h2 class="text-xl md:text-2xl font-elegant text-rose-600 mb-4 mt-2 uppercase tracking-wide">Dành Tặng Mẹ ❤️</h2>
-            <div class="video-wrapper shadow-xl border-2 border-rose-50"><iframe id="yt-video" class="absolute inset-0 w-full h-full rounded-xl" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-            <p class="text-gray-600 italic text-xs md:text-sm mt-5 px-4 leading-relaxed">"Cảm ơn Mẹ vì tất cả những điều tuyệt vời nhất!"</p>
+    <div id="surpriseModal"
+        class="fixed inset-0 z-[300] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-gray-900/85 backdrop-blur-sm">
+        <div id="modalContent"
+            class="bg-white p-5 md:p-8 rounded-3xl max-w-xl w-full text-center shadow-2xl transform scale-90 transition-transform duration-500 relative overflow-visible">
+            <button id="closeModalBtn"
+                class="absolute -top-3 -right-3 md:-top-5 md:-right-5 w-10 h-10 bg-rose-500 text-white rounded-full font-bold text-xl shadow-lg border-2 border-white z-[310] flex items-center justify-center">&times;</button>
+            <h2 class="text-xl md:text-2xl font-elegant text-rose-600 mb-4 mt-2 uppercase tracking-wide">Dành Tặng Mẹ ❤️
+            </h2>
+            <div class="video-wrapper shadow-xl border-2 border-rose-50"><iframe id="yt-video"
+                    class="absolute inset-0 w-full h-full rounded-xl" src="" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe></div>
+            <p class="text-gray-600 italic text-xs md:text-sm mt-5 px-4 leading-relaxed">"Cảm ơn Mẹ vì tất cả những điều
+                tuyệt vời nhất!"</p>
         </div>
     </div>
 
@@ -159,22 +287,29 @@
 
         const updateBook = (direction) => {
             isFlipping = true;
-            
+
             if (direction === 'forward') {
                 const pageToFlip = pages[currentPage - 1];
                 pageToFlip.style.zIndex = 100;
                 pageToFlip.classList.add('flipped');
-                setTimeout(() => { 
-                    pageToFlip.style.zIndex = currentPage - 1; 
+
+                // 👈 THÊM DÒNG NÀY: Vô hiệu hóa chạm vào trang đã lật
+                pageToFlip.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    pageToFlip.style.zIndex = currentPage - 1;
                     isFlipping = false;
                 }, 400);
-            } 
+            }
             else if (direction === 'backward') {
                 const pageToRestore = pages[currentPage];
                 // 👉 CỐT LÕI: Nhấc trang lên cao nhất NGAY LẬP TỨC
-                pageToRestore.style.zIndex = 200; 
+                pageToRestore.style.zIndex = 200;
                 pageToRestore.classList.add('unflipping');
-                
+
+                // 👈 THÊM DÒNG NÀY: Phục hồi khả năng chạm khi lật ngược lại
+                pageToRestore.style.pointerEvents = 'auto';
+
                 // Kích hoạt rơi xuống
                 requestAnimationFrame(() => {
                     pageToRestore.classList.remove('flipped');
@@ -190,11 +325,25 @@
             // Hiện/Ẩn nút Undo
             undoBtn.classList.toggle('opacity-0', currentPage === 0);
             undoBtn.classList.toggle('pointer-events-none', currentPage === 0);
+
+            const surpriseBtn = document.getElementById('surpriseBtn');
+            if (currentPage === pages.length - 1) {
+                // Đang ở trang cuối -> Hiện nút ra
+                surpriseBtn.classList.remove('opacity-0', 'pointer-events-none');
+                // Đợi nó hiện ra mượt mà xong thì mới thêm hiệu ứng nhịp tim (pulse)
+                setTimeout(() => {
+                    surpriseBtn.classList.add('animate-pulse');
+                }, 700);
+            } else {
+                // Không phải trang cuối -> Giấu đi
+                surpriseBtn.classList.add('opacity-0', 'pointer-events-none');
+                surpriseBtn.classList.remove('animate-pulse');
+            }
         };
 
         pages.forEach((page, index) => {
             page.addEventListener('click', (e) => {
-                if(isFlipping || e.target.closest('#surpriseBtn')) return;
+                if (isFlipping || e.target.closest('#surpriseBtn')) return;
                 if (index === currentPage && currentPage < pages.length - 1) {
                     currentPage++;
                     updateBook('forward');
@@ -214,10 +363,10 @@
         const modalContent = document.getElementById('modalContent');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const ytVideo = document.getElementById('yt-video');
-        const MY_YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ"; 
+        const MY_YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
 
         surpriseBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
             surpriseModal.classList.remove('opacity-0', 'pointer-events-none');
             modalContent.classList.remove('scale-90');
             modalContent.classList.add('scale-100');
@@ -260,7 +409,7 @@
                 petal.style.animationDuration = (Math.random() * 7 + 7) + 's';
                 container.appendChild(petal);
                 setTimeout(() => petal.remove(), 15000);
-            }, 200); 
+            }, 200);
         }
 
         // Khởi tạo Z-Index
@@ -270,4 +419,5 @@
         startPetalRain();
     </script>
 </body>
+
 </html>
