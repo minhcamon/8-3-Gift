@@ -358,12 +358,8 @@
             const surpriseBtn = document.getElementById('surpriseBtn');
             if (currentPage === pages.length - 1) {
                 surpriseBtn.classList.remove('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    surpriseBtn.classList.add('animate-pulse');
-                }, 700);
             } else {
                 surpriseBtn.classList.add('opacity-0', 'pointer-events-none');
-                surpriseBtn.classList.remove('animate-pulse');
             }
         };
 
