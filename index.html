@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,446 +8,277 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Quicksand:wght@500;700&display=swap');
 
-        /* Khóa cứng Body: Chống mọi hiện tượng kéo cuộn (Scroll/Bounce) trên Mobile */
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            position: fixed; top: 0; left: 0;
             font-family: 'Quicksand', sans-serif;
             background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
-            margin: 0;
-            padding: 0;
             touch-action: none;
         }
 
-        .font-elegant {
-            font-family: 'Playfair Display', serif;
-        }
+        .font-elegant { font-family: 'Playfair Display', serif; }
 
         #notebook-wrapper {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 100%; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .hint-text {
-            margin-bottom: 25px;
-            animation: pulseFade 2.5s infinite;
-            z-index: 150;
         }
 
         #notebook {
-            width: 85vw;
-            max-width: 400px;
+            width: 85vw; max-width: 400px;
             aspect-ratio: 1 / 1.35;
-            max-height: 65vh;
             position: relative;
-            transform-style: preserve-3d;
-            perspective: 2000px;
+            perspective: 1500px; /* Tăng chiều sâu để lật mượt hơn */
         }
 
-        /* TRANG GIẤY CHÍNH */
+        /* TRANG GIẤY */
         .page {
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background-color: #fffcf8;
-            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(254, 205, 211, 0.4) 31px, rgba(254, 205, 211, 0.4) 32px);
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(254, 205, 211, 0.3) 31px, rgba(254, 205, 211, 0.3) 32px);
             background-position: 0 40px;
             border-radius: 12px 12px 24px 24px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid #fce7f3;
             transform-origin: top center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            padding: 2.8rem 1.2rem 1.2rem 1.2rem;
-            -webkit-transform-style: preserve-3d;
-            will-change: transform, z-index;
-
-            /* 👉 CHÌA KHÓA LÀ ĐÂY: Xóa "opacity 0.5s" khỏi dòng này */
-            /* Nhờ vậy, giấy rơi xuống là ĐẶC NGAY LẬP TỨC, che kín trang 2 bên dưới */
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.8s;
+            padding: 2.5rem 1.2rem 1.2rem 1.2rem;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.5s;
+            backface-visibility: hidden; /* Quan trọng: Chống nháy hình */
+            display: flex; flex-direction: column;
         }
 
-        /* TRANG GIẤY KHI ĐÃ LẬT BAY ĐI (NẰM TRÊN CÙNG) */
+        /* Khi trang lật đi */
         .page.flipped {
-            transform: rotateX(120deg) translateY(-40px) skewX(2deg);
+            transform: rotateX(160deg) translateY(-50px) scale(0.95);
             opacity: 0;
             pointer-events: none;
-            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-            
-            /* 👉 Chỉ thêm transition opacity ở đây để lúc bay đi, giấy từ từ mờ dần */
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s 0.3s, box-shadow 0.8s;
         }
 
-        .page.unflipping {
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .page::after {
-            content: '';
-            position: absolute;
-            inset: 0;
+        /* Hiệu ứng bóng đổ khi lật */
+        .page::before {
+            content: ''; position: absolute; inset: 0;
             border-radius: inherit;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0) 40%);
-            opacity: 0;
-            transition: opacity 0.6s;
+            background: linear-gradient(to top, rgba(0,0,0,0.05), transparent 20%);
             pointer-events: none;
-            z-index: 5;
-        }
-
-        .page.flipped::after {
-            opacity: 1;
         }
 
         /* CÒNG SẮT */
         .binder-rings {
-            position: absolute;
-            top: -15px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-evenly;
-            padding: 0 12%;
-            z-index: 250;
-            pointer-events: none;
+            position: absolute; top: -15px; left: 0; width: 100%;
+            display: flex; justify-content: space-evenly;
+            padding: 0 12%; z-index: 500; pointer-events: none;
         }
-
         .ring {
-            width: 14px;
-            height: 42px;
-            background: linear-gradient(90deg, #d1d5db 0%, #ffffff 40%, #9ca3af 100%);
-            border-radius: 10px;
-            box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        #undoBtn {
-            margin-top: 20px;
-            transition: all 0.3s;
-            z-index: 100;
+            width: 12px; height: 35px;
+            background: linear-gradient(90deg, #9ca3af, #ffffff, #d1d5db);
+            border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .polaroid {
-            flex-grow: 1;
-            background-color: white;
-            padding: 10px 10px 35px 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            margin-bottom: 1rem;
-            max-height: 72%;
+            flex-grow: 1; background: white; padding: 10px 10px 30px 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #f3f4f6; margin-bottom: 0.5rem;
             overflow: hidden;
-            border: 1px solid #f3f4f6;
         }
+        .polaroid img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
 
-        .polaroid img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        @keyframes pulseFade {
-
-            0%,
-            100% {
-                opacity: 0.5;
-            }
-
-            50% {
-                opacity: 1;
-            }
+        /* Video Wrapper */
+        .video-wrapper {
+            position: relative; width: min(100%, 50vh * 9 / 16);
+            aspect-ratio: 9 / 16; background: #000;
+            border-radius: 1rem; overflow: hidden; margin: 0 auto;
         }
 
         .petal {
-            position: fixed;
-            top: -10vh;
-            z-index: 0;
-            opacity: 0.6;
-            animation: fall linear forwards;
-            pointer-events: none;
+            position: fixed; top: -10vh; z-index: 10;
+            animation: fall linear forwards; pointer-events: none;
         }
-
         @keyframes fall {
-            100% {
-                transform: translateY(110vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .burst-heart {
-            position: absolute;
-            font-size: 2rem;
-            animation: burst 1s ease-out forwards;
-            z-index: 400;
-            pointer-events: none;
-        }
-
-        @keyframes burst {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        /* --- VIDEO WRAPPER SIÊU CHỐNG TRÀN --- */
-        .video-wrapper {
-            position: relative;
-            /* Công thức toán học CSS: 
-               Chiều ngang tối đa 100% khung, NHƯNG bị giới hạn bằng đúng 55vh (chiều cao) * 9/16.
-               Điều này đảm bảo video không bao giờ lố 55% chiều cao màn hình điện thoại! 
-            */
-            width: min(100%, 55vh * 9 / 16);
-            aspect-ratio: 9 / 16;
-            background-color: #000;
-            border-radius: 1rem;
-            overflow: hidden;
-            margin: 0 auto;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
-
 <body>
 
     <div id="petal-container"></div>
 
     <div id="notebook-wrapper">
-        <div id="hint"
-            class="hint-text text-rose-500 font-bold bg-white/90 px-5 py-2 rounded-full shadow-sm text-xs md:text-sm border border-rose-100 flex items-center gap-2">
-            <span class="animate-bounce">👆</span> Chạm vào giấy để lật sang trang
+        <div id="hint" class="mb-4 text-rose-500 font-bold bg-white/90 px-5 py-2 rounded-full shadow-sm text-xs z-[600] flex items-center gap-2">
+            <span class="animate-bounce">👆</span> Chạm để lật trang
         </div>
 
         <div id="notebook">
             <div class="binder-rings">
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
-                <div class="ring"></div>
+                <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
             </div>
-
-            <div class="page" id="page1">
-                <div class="flex-1 flex flex-col items-center justify-center pointer-events-none">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3067/3067822.png" class="w-16 h-16 mb-4">
-                    <h2 class="text-3xl font-elegant text-rose-900 mb-1">An Nhiên</h2>
-                    <p class="text-rose-600 font-bold text-sm tracking-widest uppercase">Nhật Ký 8/3</p>
-                    <p class="text-gray-500 italic text-center text-xs mt-8 px-4 leading-relaxed">"Nơi lưu giữ những nụ
-                        cười đẹp nhất của Mẹ..."</p>
-                </div>
-            </div>
-
-            <div class="page" id="page2">
-                <div class="polaroid"><img
-                        src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80">
-                </div>
-                <p class="text-gray-700 font-elegant italic text-lg text-center">"Nụ cười của Mẹ..."</p>
-            </div>
-            <div class="page" id="page3">
-                <div class="polaroid"><img
-                        src="https://images.unsplash.com/photo-1494607239400-ff147da4e188?auto=format&fit=crop&w=600&q=80">
-                </div>
-                <p class="text-gray-700 font-elegant italic text-lg text-center">"Ngày tháng bình yên"</p>
-            </div>
-            <div class="page" id="page4">
-                <div class="polaroid"><img
-                        src="https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?auto=format&fit=crop&w=600&q=80">
-                </div>
-                <p class="text-gray-700 font-elegant italic text-lg text-center">"Yêu Mẹ rất nhiều"</p>
-            </div>
-
-            <div class="page" id="page5">
-                <div class="flex-1 flex flex-col items-center justify-center">
-                    <h2 class="text-2xl font-elegant text-rose-800 mb-4 italic">Cuối cùng...</h2>
-                    <p class="text-gray-600 text-center mb-8 text-sm px-6 leading-relaxed">Con có một món quà bí mật
-                        muốn gửi đến Mẹ!</p>
-                    <button id="surpriseBtn"
-                        class="opacity-0 pointer-events-none transition-all duration-700 px-8 py-3 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold text-base shadow-lg border-2 border-white hover:scale-105 hover:shadow-rose-300/50">
-                        🎬 Mở Quà Bí Mật
-                    </button>
-                </div>
-            </div>
+            <div id="pages-container"></div>
         </div>
 
-        <button id="undoBtn"
-            class="opacity-0 pointer-events-none px-6 py-2.5 bg-white/90 text-rose-500 rounded-full font-bold shadow-md text-xs border border-rose-100 flex items-center gap-2">
-            ↺ Xem lại trang trước
+        <button id="undoBtn" class="mt-6 opacity-0 pointer-events-none px-6 py-2 bg-white text-rose-500 rounded-full font-bold shadow-md text-xs border border-rose-100 z-[600] transition-all duration-300">
+            ↺ Trang trước
         </button>
     </div>
 
-    <div id="surpriseModal"
-        class="fixed inset-0 z-[300] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-gray-900/85 backdrop-blur-sm cursor-pointer p-4">
-
-        <div id="modalContent"
-            class="bg-white p-4 md:p-6 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative flex flex-col items-center overflow-hidden cursor-default border-2 border-rose-100">
-
-            <button id="closeModalBtn"
-                class="absolute top-3 right-3 w-8 h-8 bg-rose-500 text-white rounded-full font-bold text-lg shadow-md border-2 border-white z-[310] flex items-center justify-center hover:scale-110 transition-transform">&times;</button>
-
-            <h2 class="text-lg md:text-xl font-elegant text-rose-600 mb-4 mt-1 uppercase tracking-wide pr-6">Dành Tặng
-                Mẹ ❤️</h2>
-
-            <div class="video-wrapper border-2 border-rose-50">
-                <iframe id="yt-video" class="absolute inset-0 w-full h-full" src="" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+    <div id="surpriseModal" class="fixed inset-0 z-[1000] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-black/80 backdrop-blur-sm p-4">
+        <div id="modalContent" class="bg-white p-5 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative">
+            <button id="closeModalBtn" class="absolute -top-2 -right-2 w-10 h-10 bg-rose-500 text-white rounded-full font-bold shadow-lg border-2 border-white z-[1010]">×</button>
+            <h2 class="text-xl font-elegant text-rose-600 mb-4 uppercase tracking-wider">Gửi Tặng Mẹ ❤️</h2>
+            <div class="video-wrapper">
+                <iframe id="yt-video" class="absolute inset-0 w-full h-full" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
-
-            <p class="text-gray-600 italic text-[12px] md:text-sm mt-4 px-2 leading-relaxed">"Cảm ơn Mẹ vì tất cả những
-                điều tuyệt vời nhất!"</p>
+            <p class="text-gray-500 italic text-xs mt-4">"Mẹ là điều tuyệt vời nhất của con!"</p>
         </div>
     </div>
 
     <script>
-        const pages = document.querySelectorAll('.page');
+        // 1. DỮ LIỆU SÁCH (Dễ dàng chỉnh sửa tại đây)
+        const notebookData = [
+            { type: 'cover', title: 'An Nhiên', sub: 'Nhật Ký 8/3', desc: '"Nơi lưu giữ những nụ cười đẹp nhất của Mẹ..."', icon: '🌹' },
+            { type: 'photo', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600', caption: '"Nụ cười của Mẹ..."' },
+            { type: 'photo', img: 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=600', caption: '"Ngày tháng bình yên"' },
+            { type: 'photo', img: 'https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?w=600', caption: '"Yêu Mẹ rất nhiều"' },
+            { type: 'last', title: 'Cuối cùng...', desc: 'Con có một món quà bí mật muốn gửi đến Mẹ!', btnText: '🎬 Mở Quà Bí Mật' }
+        ];
+
+        const YOUTUBE_ID = "dQw4w9WgXcQ"; // Thay ID video của bạn vào đây
+        const container = document.getElementById('pages-container');
         const undoBtn = document.getElementById('undoBtn');
         let currentPage = 0;
         let isFlipping = false;
 
-        const updateBook = (direction) => {
-            isFlipping = true;
-
-            if (direction === 'forward') {
-                const pageToFlip = pages[currentPage - 1];
-                pageToFlip.style.zIndex = 100;
-                pageToFlip.classList.add('flipped');
-
-                pageToFlip.style.pointerEvents = 'none';
-
-                // 👉 SỬA LẠI: Đồng bộ 800ms chờ CSS bay xong mới đổi tầng
-                setTimeout(() => {
-                    pageToFlip.style.zIndex = currentPage - 1;
-                    isFlipping = false;
-                }, 800); 
-            }
-            else if (direction === 'backward') {
-                const pageToRestore = pages[currentPage];
-                // Nhấc trang lên cao nhất NGAY LẬP TỨC
-                pageToRestore.style.zIndex = 200;
-                pageToRestore.classList.add('unflipping');
-
-                pageToRestore.style.pointerEvents = 'auto';
-
-                requestAnimationFrame(() => {
-                    pageToRestore.classList.remove('flipped');
+        // 2. RENDER TRANG
+        function initNotebook() {
+            container.innerHTML = '';
+            notebookData.forEach((data, i) => {
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.style.zIndex = notebookData.length - i;
+                
+                if (data.type === 'cover') {
+                    page.innerHTML = `
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <span class="text-5xl mb-4">${data.icon}</span>
+                            <h2 class="text-3xl font-elegant text-rose-900 mb-1">${data.title}</h2>
+                            <p class="text-rose-600 font-bold text-sm tracking-widest uppercase">${data.sub}</p>
+                            <p class="text-gray-500 italic text-center text-xs mt-8 px-4">${data.desc}</p>
+                        </div>`;
+                } else if (data.type === 'photo') {
+                    page.innerHTML = `
+                        <div class="polaroid"><img src="${data.img}"></div>
+                        <p class="text-gray-700 font-elegant italic text-lg text-center">${data.caption}</p>`;
+                } else {
+                    page.innerHTML = `
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <h2 class="text-2xl font-elegant text-rose-800 mb-4 italic">${data.title}</h2>
+                            <p class="text-gray-600 text-center mb-8 text-sm px-6">${data.desc}</p>
+                            <button id="surpriseBtn" class="px-8 py-3 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold shadow-lg animate-pulse">
+                                ${data.btnText}
+                            </button>
+                        </div>`;
+                }
+                
+                page.addEventListener('click', (e) => {
+                    if (e.target.closest('#surpriseBtn')) return;
+                    flipForward();
                 });
+                container.appendChild(page);
+            });
+        }
 
-                // 👉 SỬA LẠI: Đồng bộ 800ms và trả về đúng z-index CAO (100 - index)
-                setTimeout(() => {
-                    pageToRestore.style.zIndex = 100 - currentPage; // Fix lỗi sập z-index
-                    pageToRestore.classList.remove('unflipping');
-                    isFlipping = false;
-                }, 800);
-            }
+        // 3. LOGIC LẬT TRANG (FIX FLASH)
+        function flipForward() {
+            if (isFlipping || currentPage >= notebookData.length - 1) return;
+            isFlipping = true;
+            
+            const page = document.querySelectorAll('.page')[currentPage];
+            page.style.zIndex = 100; // Đưa lên cao nhất khi đang bay
+            page.classList.add('flipped');
+            
+            currentPage++;
+            setTimeout(() => {
+                page.style.zIndex = currentPage; // Sau khi bay xong mới hạ tầng xuống
+                isFlipping = false;
+                updateControls();
+            }, 800);
+        }
 
-            // Hiện/Ẩn nút Undo
+        function flipBackward() {
+            if (isFlipping || currentPage <= 0) return;
+            isFlipping = true;
+            
+            currentPage--;
+            const page = document.querySelectorAll('.page')[currentPage];
+            page.style.zIndex = 100; // Nhấc lên cao nhất để "phủ" xuống
+            page.classList.remove('flipped');
+            
+            setTimeout(() => {
+                // Tính toán lại z-index cho đúng thứ tự tầng
+                page.style.zIndex = notebookData.length - currentPage;
+                isFlipping = false;
+                updateControls();
+            }, 800);
+        }
+
+        function updateControls() {
             undoBtn.classList.toggle('opacity-0', currentPage === 0);
             undoBtn.classList.toggle('pointer-events-none', currentPage === 0);
+            document.getElementById('hint').style.opacity = currentPage === 0 ? "1" : "0";
+        }
 
-            const surpriseBtn = document.getElementById('surpriseBtn');
-            if (currentPage === pages.length - 1) {
-                surpriseBtn.classList.remove('opacity-0', 'pointer-events-none');
-            } else {
-                surpriseBtn.classList.add('opacity-0', 'pointer-events-none');
-            }
-        };
+        undoBtn.addEventListener('click', flipBackward);
 
-        pages.forEach((page, index) => {
-            page.addEventListener('click', (e) => {
-                if (isFlipping || e.target.closest('#surpriseBtn')) return;
-                if (index === currentPage && currentPage < pages.length - 1) {
-                    currentPage++;
-                    updateBook('forward');
-                }
-            });
-        });
-
-        undoBtn.addEventListener('click', () => {
-            if (isFlipping || currentPage <= 0) return;
-            currentPage--;
-            updateBook('backward');
-        });
-
-        // Popup Video & Hearts
-        const surpriseBtn = document.getElementById('surpriseBtn');
-        const surpriseModal = document.getElementById('surpriseModal');
-        const modalContent = document.getElementById('modalContent');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const ytVideo = document.getElementById('yt-video');
-        const MY_YOUTUBE_VIDEO_ID = "dQw4w9WgXcQ";
-
-        surpriseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            surpriseModal.classList.remove('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-90');
-            modalContent.classList.add('scale-100');
-            ytVideo.src = `https://www.youtube.com/embed/${MY_YOUTUBE_VIDEO_ID}?autoplay=1&enablejsapi=1`;
-            createHeartBurst(window.innerWidth / 2, window.innerHeight / 2);
-        });
-
-        const closeVideoModal = () => {
-            surpriseModal.classList.add('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-90');
-            setTimeout(() => { ytVideo.src = ''; }, 300);
-        };
-
-        // Bấm nút X để đóng
-        closeModalBtn.addEventListener('click', closeVideoModal);
-
-        // Bấm ra ngoài (Backdrop) để đóng
-        surpriseModal.addEventListener('click', (e) => {
-            if (e.target === surpriseModal) {
-                closeVideoModal();
+        // 4. HIỆU ỨNG SURPRISE
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#surpriseBtn')) {
+                const modal = document.getElementById('surpriseModal');
+                const video = document.getElementById('yt-video');
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                document.getElementById('modalContent').classList.remove('scale-90');
+                video.src = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1`;
+                createHeartBurst();
             }
         });
 
-        function createHeartBurst(x, y) {
-            const hearts = ['🌹', '💖', '✨', '💝'];
-            for (let i = 0; i < 20; i++) {
-                const heart = document.createElement('div');
-                heart.classList.add('burst-heart');
-                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = x + 'px'; heart.style.top = y + 'px';
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 120 + 60;
-                heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
-                heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 1000);
+        document.getElementById('closeModalBtn').onclick = () => {
+            const modal = document.getElementById('surpriseModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('yt-video').src = '';
+        };
+
+        function createHeartBurst() {
+            for (let i = 0; i < 15; i++) {
+                const h = document.createElement('div');
+                h.className = 'fixed text-2xl z-[1100] pointer-events-none';
+                h.innerHTML = ['🌹','💖','✨'][Math.floor(Math.random()*3)];
+                h.style.left = '50%'; h.style.top = '50%';
+                const tx = (Math.random()-0.5)*300;
+                const ty = (Math.random()-0.5)*300;
+                h.animate([
+                    { transform: 'translate(0,0) scale(0)', opacity: 1 },
+                    { transform: `translate(${tx}px,${ty}px) scale(1.5)`, opacity: 0 }
+                ], { duration: 1000, easing: 'ease-out' });
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 1000);
             }
         }
 
         function startPetalRain() {
-            const petals = ['🌸', '💮', '🌷'];
-            const container = document.getElementById('petal-container');
             setInterval(() => {
-                const petal = document.createElement('div');
-                petal.classList.add('petal');
-                petal.textContent = petals[Math.floor(Math.random() * petals.length)];
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.fontSize = (Math.random() * 0.8 + 0.8) + 'rem';
-                petal.style.animationDuration = (Math.random() * 7 + 7) + 's';
-                container.appendChild(petal);
-                setTimeout(() => petal.remove(), 15000);
-            }, 200);
+                const p = document.createElement('div');
+                p.className = 'petal';
+                p.innerHTML = ['🌸','🌷'][Math.floor(Math.random()*2)];
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+                p.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                document.getElementById('petal-container').appendChild(p);
+                setTimeout(() => p.remove(), 8000);
+            }, 300);
         }
 
-        pages.forEach((page, index) => {
-            page.style.zIndex = pages.length - index;
-        });
+        // Khởi tạo
+        initNotebook();
         startPetalRain();
     </script>
 </body>
-
 </html>
