@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,277 +9,383 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Quicksand:wght@500;700&display=swap');
 
-        html, body {
-            width: 100%; height: 100%; overflow: hidden;
-            position: fixed; top: 0; left: 0;
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
-            touch-action: none;
-        }
-
-        .font-elegant { font-family: 'Playfair Display', serif; }
-
-        #notebook-wrapper {
-            width: 100%; height: 100vh;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            padding: 10px;
-        }
-
-        #notebook {
-            width: 85vw; max-width: 400px;
-            aspect-ratio: 1 / 1.35;
-            position: relative;
-            perspective: 1500px; /* Tăng chiều sâu để lật mượt hơn */
-        }
-
-        /* TRANG GIẤY */
-        .page {
-            position: absolute; inset: 0;
-            background-color: #fffcf8;
-            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(254, 205, 211, 0.3) 31px, rgba(254, 205, 211, 0.3) 32px);
-            background-position: 0 40px;
-            border-radius: 12px 12px 24px 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid #fce7f3;
-            transform-origin: top center;
-            padding: 2.5rem 1.2rem 1.2rem 1.2rem;
-            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.5s;
-            backface-visibility: hidden; /* Quan trọng: Chống nháy hình */
-            display: flex; flex-direction: column;
-        }
-
-        /* Khi trang lật đi */
-        .page.flipped {
-            transform: rotateX(160deg) translateY(-50px) scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Hiệu ứng bóng đổ khi lật */
-        .page::before {
-            content: ''; position: absolute; inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(to top, rgba(0,0,0,0.05), transparent 20%);
-            pointer-events: none;
-        }
-
-        /* CÒNG SẮT */
-        .binder-rings {
-            position: absolute; top: -15px; left: 0; width: 100%;
-            display: flex; justify-content: space-evenly;
-            padding: 0 12%; z-index: 500; pointer-events: none;
-        }
-        .ring {
-            width: 12px; height: 35px;
-            background: linear-gradient(90deg, #9ca3af, #ffffff, #d1d5db);
-            border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .polaroid {
-            flex-grow: 1; background: white; padding: 10px 10px 30px 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border: 1px solid #f3f4f6; margin-bottom: 0.5rem;
+        html,
+        body {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            font-family: 'Quicksand', sans-serif;
+            touch-action: none;
+            background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);
         }
-        .polaroid img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
 
-        /* Video Wrapper */
-        .video-wrapper {
-            position: relative; width: min(100%, 50vh * 9 / 16);
-            aspect-ratio: 9 / 16; background: #000;
-            border-radius: 1rem; overflow: hidden; margin: 0 auto;
+        /* Pattern chìm cho BG bớt đơn điệu */
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#fb7185 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .font-elegant {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #app-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            perspective: 2000px;
+            z-index: 10;
+        }
+
+        /* CUỐN SỔ */
+        #book {
+            position: relative;
+            width: 88vw;
+            max-width: 380px;
+            height: 68vh;
+            max-height: 550px;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            position: absolute;
+            inset: 0;
+            transform-origin: left center;
+            transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            backface-visibility: hidden;
+        }
+
+        .page-front,
+        .page-back {
+            position: absolute;
+            inset: 0;
+            border-radius: 4px 15px 15px 4px;
+            border: 1px solid #fce7f3;
+            box-shadow: inset 10px 0 30px rgba(0, 0, 0, 0.03), 5px 5px 20px rgba(0, 0, 0, 0.1);
+            backface-visibility: hidden;
+        }
+
+        .page-front {
+            background: #fffcf8;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(254, 205, 211, 0.2) 31px, rgba(254, 205, 211, 0.2) 32px);
+            background-position: 0 40px;
+            padding: 35px 20px 20px 35px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-back {
+            background: #f3eee8;
+            transform: rotateY(-180deg);
+            z-index: 1;
+        }
+
+        .page.flipped {
+            transform: rotateY(-178deg);
+        }
+
+        /* GÁY LÒ XO */
+        .binder-rings {
+            position: absolute;
+            left: -14px;
+            top: 30px;
+            bottom: 30px;
+            width: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .ring {
+            width: 35px;
+            height: 10px;
+            background: linear-gradient(to bottom, #bdc3c7, #ffffff, #95a5a6);
+            border-radius: 10px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* HIỆU ỨNG TRANG TRÍ */
+        .polaroid {
+            background: white;
+            padding: 8px 8px 25px 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f3f4f6;
+        }
+
+        .tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: rgba(254, 205, 211, 0.6);
+            z-index: 10;
+        }
+
+        /* HOA RƠI MỜ PHÍA SAU */
+        #petal-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .petal {
-            position: fixed; top: -10vh; z-index: 10;
-            animation: fall linear forwards; pointer-events: none;
+            position: absolute;
+            top: -10%;
+            animation: fall linear forwards;
+            filter: blur(2px);
+            opacity: 0.5;
         }
+
         @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
         }
     </style>
 </head>
+
 <body>
 
     <div id="petal-container"></div>
 
-    <div id="notebook-wrapper">
-        <div id="hint" class="mb-4 text-rose-500 font-bold bg-white/90 px-5 py-2 rounded-full shadow-sm text-xs z-[600] flex items-center gap-2">
-            <span class="animate-bounce">👆</span> Chạm để lật trang
-        </div>
-
-        <div id="notebook">
+    <div id="app-container">
+        <div id="book">
             <div class="binder-rings">
-                <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
             </div>
             <div id="pages-container"></div>
         </div>
 
-        <button id="undoBtn" class="mt-6 opacity-0 pointer-events-none px-6 py-2 bg-white text-rose-500 rounded-full font-bold shadow-md text-xs border border-rose-100 z-[600] transition-all duration-300">
-            ↺ Trang trước
+        <button id="undoBtn"
+            class="mt-8 opacity-0 pointer-events-none px-8 py-2.5 bg-white/90 text-rose-500 rounded-full font-bold shadow-lg border border-rose-100 transition-all duration-300">
+            ↺ Xem lại trang trước
         </button>
     </div>
 
-    <div id="surpriseModal" class="fixed inset-0 z-[1000] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-black/80 backdrop-blur-sm p-4">
-        <div id="modalContent" class="bg-white p-5 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative">
-            <button id="closeModalBtn" class="absolute -top-2 -right-2 w-10 h-10 bg-rose-500 text-white rounded-full font-bold shadow-lg border-2 border-white z-[1010]">×</button>
-            <h2 class="text-xl font-elegant text-rose-600 mb-4 uppercase tracking-wider">Gửi Tặng Mẹ ❤️</h2>
-            <div class="video-wrapper">
-                <iframe id="yt-video" class="absolute inset-0 w-full h-full" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <p class="text-gray-500 italic text-xs mt-4">"Mẹ là điều tuyệt vời nhất của con!"</p>
+    <div id="surpriseModal"
+        class="fixed inset-0 z-[2000] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-black/80 backdrop-blur-sm p-4">
+        <div id="modalContent"
+            class="bg-white p-5 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative">
+            <button id="closeModalBtn"
+                class="absolute -top-3 -right-3 w-10 h-10 bg-rose-500 text-white rounded-full font-bold shadow-lg border-2 border-white">×</button>
+            <h2 class="text-xl font-elegant text-rose-600 mb-4 uppercase tracking-widest">Dành Cho Mẹ ❤️</h2>
+            <div class="video-wrapper"><iframe id="yt-video" class="absolute inset-0 w-full h-full" src=""
+                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
         </div>
     </div>
 
     <script>
-        // 1. DỮ LIỆU SÁCH (Dễ dàng chỉnh sửa tại đây)
+        const MY_YOUTUBE_ID = "dQw4w9WgXcQ";
+
+        // CẤU TRÚC THEO ĐÚNG THỨ TỰ BẠN YÊU CẦU
         const notebookData = [
-            { type: 'cover', title: 'An Nhiên', sub: 'Nhật Ký 8/3', desc: '"Nơi lưu giữ những nụ cười đẹp nhất của Mẹ..."', icon: '🌹' },
-            { type: 'photo', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600', caption: '"Nụ cười của Mẹ..."' },
-            { type: 'photo', img: 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=600', caption: '"Ngày tháng bình yên"' },
-            { type: 'photo', img: 'https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?w=600', caption: '"Yêu Mẹ rất nhiều"' },
-            { type: 'last', title: 'Cuối cùng...', desc: 'Con có một món quà bí mật muốn gửi đến Mẹ!', btnText: '🎬 Mở Quà Bí Mật' }
+            { type: 'start', title: 'An Nhiên', sub: 'Nhật Ký 8/3', icon: '🌸' },
+            { type: 'text-start', title: 'Gửi Mẹ yêu,', content: 'Con viết những dòng này để cảm ơn Mẹ vì tất cả những điều tuyệt vời Mẹ đã dành cho con. Mẹ luôn là người phụ nữ đẹp nhất trong lòng con...', footer: 'Con của Mẹ' },
+            { type: 'photo-single', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600', caption: 'Nụ cười rạng rỡ của Mẹ' },
+            { type: 'text-break', content: '“Hạnh phúc không phải là điểm đến, hạnh phúc là khi có Mẹ bên cạnh.”', icon: '✨' },
+            { type: 'photo-checklist', img: 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=400', title: 'Lời hứa của con', items: ['Luôn ngoan ngoãn', 'Nấu cơm phụ Mẹ', 'Luôn cười thật tươi'] },
+            { type: 'text-break', content: '“Cảm ơn Mẹ đã chọn làm Mẹ của con.”', icon: '🌹' },
+            { type: 'gallery', title: 'Mảnh ghép kỷ niệm', images: ['https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?w=300', 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300', 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=300', 'https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=300'] },
+            { type: 'icon-text', icon: '❤️', text: 'Mẹ Là Tuyệt Vời Nhất!' },
+            { type: 'last', title: 'Món Quà Bí Mật', desc: 'Con có một điều bất ngờ nhỏ tặng Mẹ...', btnText: '🎬 MỞ QUÀ NGAY' }
         ];
 
-        const YOUTUBE_ID = "dQw4w9WgXcQ"; // Thay ID video của bạn vào đây
-        const container = document.getElementById('pages-container');
-        const undoBtn = document.getElementById('undoBtn');
         let currentPage = 0;
         let isFlipping = false;
+        const container = document.getElementById('pages-container');
+        const undoBtn = document.getElementById('undoBtn');
 
-        // 2. RENDER TRANG
-        function initNotebook() {
+        function initBook() {
             container.innerHTML = '';
             notebookData.forEach((data, i) => {
                 const page = document.createElement('div');
                 page.className = 'page';
                 page.style.zIndex = notebookData.length - i;
-                
-                if (data.type === 'cover') {
-                    page.innerHTML = `
-                        <div class="flex-1 flex flex-col items-center justify-center">
-                            <span class="text-5xl mb-4">${data.icon}</span>
-                            <h2 class="text-3xl font-elegant text-rose-900 mb-1">${data.title}</h2>
-                            <p class="text-rose-600 font-bold text-sm tracking-widest uppercase">${data.sub}</p>
-                            <p class="text-gray-500 italic text-center text-xs mt-8 px-4">${data.desc}</p>
+                let content = '';
+
+                switch (data.type) {
+                    case 'start':
+                        content = `<div class="flex-1 flex flex-col items-center justify-center text-center">
+                            <span class="text-6xl mb-4">${data.icon}</span>
+                            <h1 class="text-3xl font-elegant text-rose-900">${data.title}</h1>
+                            <div class="w-12 h-1 bg-rose-300 my-4"></div>
+                            <p class="text-rose-600 font-bold tracking-widest uppercase text-xs">${data.sub}</p>
                         </div>`;
-                } else if (data.type === 'photo') {
-                    page.innerHTML = `
-                        <div class="polaroid"><img src="${data.img}"></div>
-                        <p class="text-gray-700 font-elegant italic text-lg text-center">${data.caption}</p>`;
-                } else {
-                    page.innerHTML = `
-                        <div class="flex-1 flex flex-col items-center justify-center">
-                            <h2 class="text-2xl font-elegant text-rose-800 mb-4 italic">${data.title}</h2>
-                            <p class="text-gray-600 text-center mb-8 text-sm px-6">${data.desc}</p>
-                            <button id="surpriseBtn" class="px-8 py-3 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded-full font-bold shadow-lg animate-pulse">
-                                ${data.btnText}
-                            </button>
+                        break;
+                    case 'text-start':
+                        content = `<div class="flex-1 flex flex-col pt-4">
+                            <p class="text-right text-[10px] text-rose-300 font-bold mb-4">Ngày 8 tháng 3</p>
+                            <h2 class="text-xl font-elegant text-rose-800 mb-4 underline decoration-rose-100">${data.title}</h2>
+                            <p class="text-gray-700 text-sm leading-relaxed indent-8 text-justify italic">${data.content}</p>
+                            <p class="text-right mt-auto font-elegant text-rose-500 text-lg">${data.footer}</p>
                         </div>`;
+                        break;
+                    case 'photo-single':
+                        content = `<div class="flex-1 flex flex-col items-center justify-center">
+                            <div class="polaroid transform -rotate-2 relative"><div class="tape"></div><img src="${data.img}"></div>
+                            <p class="mt-4 font-elegant text-gray-600 text-center">${data.caption}</p>
+                        </div>`;
+                        break;
+                    case 'text-break':
+                        content = `<div class="flex-1 flex flex-col items-center justify-center text-center px-4">
+                            <span class="text-2xl mb-4">${data.icon}</span>
+                            <p class="text-lg font-elegant text-rose-700 italic leading-relaxed">${data.content}</p>
+                            <div class="w-8 h-0.5 bg-rose-100 mt-6"></div>
+                        </div>`;
+                        break;
+                    case 'photo-checklist':
+                        const list = data.items.map(item => `<li class="text-[11px] text-gray-600 mb-1 flex items-center gap-1"><input type="checkbox" checked class="accent-rose-400"> ${item}</li>`).join('');
+                        content = `<div class="flex-1">
+                            <div class="w-32 h-32 mx-auto mb-4 border-4 border-white shadow-md transform rotate-2 overflow-hidden"><img src="${data.img}" class="w-full h-full object-cover"></div>
+                            <div class="bg-rose-50/50 p-3 rounded-lg border border-dashed border-rose-200">
+                                <p class="font-bold text-rose-800 text-xs mb-2 text-center underline">${data.title}</p>
+                                <ul class="list-none">${list}</ul>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'gallery':
+                        const imgs = data.images.map((url, idx) => `<div class="aspect-square border-2 border-white shadow-sm overflow-hidden transform ${idx % 2 === 0 ? 'rotate-2' : '-rotate-2'}"><img src="${url}" class="w-full h-full object-cover"></div>`).join('');
+                        content = `<div class="flex-1 flex flex-col pt-2">
+                            <h2 class="text-center font-elegant text-rose-800 mb-4 text-sm uppercase tracking-widest">${data.title}</h2>
+                            <div class="grid grid-cols-2 gap-3">${imgs}</div>
+                        </div>`;
+                        break;
+                    case 'icon-text':
+                        // CĂN GIỮA PHÁ CÁCH: Icon lệch một bên, chữ lệch một bên
+                        content = `<div class="flex-1 flex flex-col items-center justify-center text-center p-4">
+                    <div class="relative">
+                        <div class="text-8xl opacity-20 absolute -top-10 -left-10">${data.icon}</div>
+                        <p class="text-2xl font-elegant text-rose-700 relative z-10 leading-loose">
+                            ${data.text}
+                        </p>
+                        <div class="text-8xl opacity-20 absolute -bottom-10 -right-10">${data.icon}</div>
+                    </div>
+                </div>`;
+                        break;
+                    case 'last':
+                        content = `<div class="flex-1 flex flex-col items-center justify-center text-center">
+                            <h2 class="text-xl font-elegant text-rose-800 mb-2 italic">${data.title}</h2>
+                            <p class="text-gray-500 mb-10 px-6 text-[11px]">${data.desc}</p>
+                            <button id="surpriseBtn" class="px-8 py-3 bg-rose-500 text-white rounded-full font-bold shadow-lg animate-bounce text-sm">${data.btnText}</button>
+                        </div>`;
+                        break;
                 }
-                
-                page.addEventListener('click', (e) => {
-                    if (e.target.closest('#surpriseBtn')) return;
-                    flipForward();
-                });
+
+                page.innerHTML = `<div class="page-front shadow-inner">${content}</div><div class="page-back"></div>`;
+                page.onclick = () => flipForward();
                 container.appendChild(page);
             });
         }
 
-        // 3. LOGIC LẬT TRANG (FIX FLASH)
+        // LOGIC LẬT TRANG (CHỐNG FLASH)
         function flipForward() {
             if (isFlipping || currentPage >= notebookData.length - 1) return;
             isFlipping = true;
-            
-            const page = document.querySelectorAll('.page')[currentPage];
-            page.style.zIndex = 100; // Đưa lên cao nhất khi đang bay
+            const pages = document.querySelectorAll('.page');
+            const page = pages[currentPage];
+            page.style.zIndex = 100;
             page.classList.add('flipped');
-            
             currentPage++;
-            setTimeout(() => {
-                page.style.zIndex = currentPage; // Sau khi bay xong mới hạ tầng xuống
-                isFlipping = false;
-                updateControls();
-            }, 800);
+            setTimeout(() => { page.style.zIndex = currentPage; isFlipping = false; updateUI(); }, 900);
         }
 
         function flipBackward() {
             if (isFlipping || currentPage <= 0) return;
             isFlipping = true;
-            
             currentPage--;
-            const page = document.querySelectorAll('.page')[currentPage];
-            page.style.zIndex = 100; // Nhấc lên cao nhất để "phủ" xuống
+            const pages = document.querySelectorAll('.page');
+            const page = pages[currentPage];
+            page.style.zIndex = 100;
             page.classList.remove('flipped');
-            
-            setTimeout(() => {
-                // Tính toán lại z-index cho đúng thứ tự tầng
-                page.style.zIndex = notebookData.length - currentPage;
-                isFlipping = false;
-                updateControls();
-            }, 800);
+            setTimeout(() => { page.style.zIndex = notebookData.length - currentPage; isFlipping = false; updateUI(); }, 900);
         }
 
-        function updateControls() {
+        function updateUI() {
             undoBtn.classList.toggle('opacity-0', currentPage === 0);
             undoBtn.classList.toggle('pointer-events-none', currentPage === 0);
-            document.getElementById('hint').style.opacity = currentPage === 0 ? "1" : "0";
         }
 
-        undoBtn.addEventListener('click', flipBackward);
-
-        // 4. HIỆU ỨNG SURPRISE
         document.addEventListener('click', (e) => {
             if (e.target.closest('#surpriseBtn')) {
                 const modal = document.getElementById('surpriseModal');
                 const video = document.getElementById('yt-video');
                 modal.classList.remove('opacity-0', 'pointer-events-none');
-                document.getElementById('modalContent').classList.remove('scale-90');
-                video.src = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1`;
+                video.src = `https://www.youtube.com/embed/${MY_YOUTUBE_ID}?autoplay=1`;
                 createHeartBurst();
             }
         });
 
         document.getElementById('closeModalBtn').onclick = () => {
-            const modal = document.getElementById('surpriseModal');
-            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('surpriseModal').classList.add('opacity-0', 'pointer-events-none');
             document.getElementById('yt-video').src = '';
         };
 
-        function createHeartBurst() {
-            for (let i = 0; i < 15; i++) {
-                const h = document.createElement('div');
-                h.className = 'fixed text-2xl z-[1100] pointer-events-none';
-                h.innerHTML = ['🌹','💖','✨'][Math.floor(Math.random()*3)];
-                h.style.left = '50%'; h.style.top = '50%';
-                const tx = (Math.random()-0.5)*300;
-                const ty = (Math.random()-0.5)*300;
-                h.animate([
-                    { transform: 'translate(0,0) scale(0)', opacity: 1 },
-                    { transform: `translate(${tx}px,${ty}px) scale(1.5)`, opacity: 0 }
-                ], { duration: 1000, easing: 'ease-out' });
-                document.body.appendChild(h);
-                setTimeout(() => h.remove(), 1000);
-            }
-        }
-
         function startPetalRain() {
+            const container = document.getElementById('petal-container');
+            const icons = ['🌸', '🌷', '✨', '💖'];
             setInterval(() => {
                 const p = document.createElement('div');
                 p.className = 'petal';
-                p.innerHTML = ['🌸','🌷'][Math.floor(Math.random()*2)];
+                p.innerHTML = icons[Math.floor(Math.random() * icons.length)];
                 p.style.left = Math.random() * 100 + 'vw';
-                p.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+                p.style.fontSize = (Math.random() * 1.2 + 0.5) + 'rem';
                 p.style.animationDuration = (Math.random() * 5 + 5) + 's';
-                document.getElementById('petal-container').appendChild(p);
+                container.appendChild(p);
                 setTimeout(() => p.remove(), 8000);
-            }, 300);
+            }, 500);
         }
 
-        // Khởi tạo
-        initNotebook();
+        function createHeartBurst() {
+            for (let i = 0; i < 20; i++) {
+                const h = document.createElement('div');
+                h.innerHTML = ['🌹', '💝', '✨'][Math.floor(Math.random() * 3)];
+                h.className = 'fixed text-3xl z-[3000] pointer-events-none';
+                h.style.left = '50%'; h.style.top = '50%';
+                const tx = (Math.random() - 0.5) * 400; const ty = (Math.random() - 0.5) * 400;
+                h.animate([{ transform: 'translate(-50%,-50%) scale(0)', opacity: 1 }, { transform: `translate(${tx}px,${ty}px) scale(2)`, opacity: 0 }], { duration: 1200, easing: 'ease-out' });
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 1200);
+            }
+        }
+
+        initBook();
         startPetalRain();
+        undoBtn.onclick = flipBackward;
     </script>
 </body>
+
 </html>
