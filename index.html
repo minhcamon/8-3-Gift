@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sổ Tay Kỷ Niệm - Gửi Mẹ</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Quicksand:wght@500;700&display=swap');
@@ -200,12 +201,27 @@
     <div id="surpriseModal"
         class="fixed inset-0 z-[2000] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 bg-black/80 backdrop-blur-sm p-4">
         <div id="modalContent"
-            class="bg-white p-5 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative">
+            class="bg-white p-8 rounded-3xl w-full max-w-[340px] text-center shadow-2xl transform scale-90 transition-transform duration-500 relative border-2 border-rose-100">
+
             <button id="closeModalBtn"
-                class="absolute -top-3 -right-3 w-10 h-10 bg-rose-500 text-white rounded-full font-bold shadow-lg border-2 border-white">×</button>
-            <h2 class="text-xl font-elegant text-rose-600 mb-4 uppercase tracking-widest">Dành Cho Mẹ ❤️</h2>
-            <div class="video-wrapper"><iframe id="yt-video" class="absolute inset-0 w-full h-full" src=""
-                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+                class="absolute -top-3 -right-3 w-10 h-10 bg-rose-500 text-white rounded-full font-bold shadow-lg border-2 border-white z-[2010]">×</button>
+
+            <div class="mb-6 text-6xl animate-bounce">🎁</div>
+
+            <h2 class="text-2xl font-elegant text-rose-600 mb-6 uppercase tracking-widest leading-tight">
+                Mẹ ơi...
+            </h2>
+
+            <p class="text-gray-700 font-bold text-xl mb-8 leading-relaxed">
+                Gọi cho con để nhận quà nhé!
+            </p>
+
+            <a href="https://m.me/nhatminhh.2312" target="_blank"
+                class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform">
+                📞 Gọi cho con ngay
+            </a>
+
+            <p class="text-gray-400 italic text-[10px] mt-8">"Con đang đợi điện thoại của Mẹ đó!"</p>
         </div>
     </div>
 
@@ -216,11 +232,11 @@
         const notebookData = [
             { type: 'start', title: 'An Nhiên', sub: 'Nhật Ký 8/3', icon: '🌸' },
             { type: 'text-start', title: 'Gửi Mẹ yêu,', content: 'Con viết những dòng này để cảm ơn Mẹ vì tất cả những điều tuyệt vời Mẹ đã dành cho con. Mẹ luôn là người phụ nữ đẹp nhất trong lòng con...', footer: 'Con của Mẹ' },
-            { type: 'photo-single', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600', caption: 'Nụ cười rạng rỡ của Mẹ' },
+            { type: 'photo-single', img: 'nucuoi.jpg', caption: 'Nụ cười rạng rỡ của Mẹ' },
             { type: 'text-break', content: '“Hạnh phúc không phải là điểm đến, hạnh phúc là khi có Mẹ bên cạnh.”', icon: '✨' },
-            { type: 'photo-checklist', img: 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=400', title: 'Lời hứa của con', items: ['Luôn ngoan ngoãn', 'Nấu cơm phụ Mẹ', 'Luôn cười thật tươi'] },
+            { type: 'photo-checklist', img: 'gallery1.jpg', title: 'Lời hứa của con', items: ['Luôn ngoan ngoãn', 'Nấu cơm phụ Mẹ', 'Luôn cười thật tươi'] },
             { type: 'text-break', content: '“Cảm ơn Mẹ đã chọn làm Mẹ của con.”', icon: '🌹' },
-            { type: 'gallery', title: 'Mảnh ghép kỷ niệm', images: ['https://images.unsplash.com/photo-1542037104857-ffcb0b07bb90?w=300', 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300', 'https://images.unsplash.com/photo-1494607239400-ff147da4e188?w=300', 'https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=300'] },
+            { type: 'gallery', title: 'Mảnh ghép kỷ niệm', images: ['loihua.jpg', 'gallery2.jpg', 'gallery3.jpg', 'gallery4.jpg'] },
             { type: 'icon-text', icon: '❤️', text: 'Mẹ Là Tuyệt Vời Nhất!' },
             { type: 'last', title: 'Món Quà Bí Mật', desc: 'Con có một điều bất ngờ nhỏ tặng Mẹ...', btnText: '🎬 MỞ QUÀ NGAY' }
         ];
